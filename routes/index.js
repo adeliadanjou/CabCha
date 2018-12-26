@@ -86,6 +86,9 @@ router.delete('/eaters',(req, res, next) => {
 	});
 });
 
+// CREATE_GROUPS - POST
+
+
 
 module.exports = router;
 

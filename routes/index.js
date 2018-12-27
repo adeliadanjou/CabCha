@@ -1,7 +1,8 @@
 const express = require('express');
 const router  = express.Router();
-const Eater = require('../models/eater');
-const Restaurant = require('../models/restaurant');
+const Eater = require('../models/Eater');
+const Restaurant = require('../models/Restaurant');
+const Group = require('../models/Group');
 
 router.get('/', (req, res, next) => {
   res.render('index');
@@ -20,7 +21,7 @@ router.post('/eaters', (req, res, next) => {
 		if (error) { 
 			next(error); 
 		} else { 
-			res.send(200);
+			res.status(200);
 		}
 	});
 });
@@ -31,7 +32,7 @@ router.get('/eaters', (req, res, next) => {
 		if (error) { 
 			next(error); 
 		} else { 
-			res.send(200, eatersFromDB);
+			res.status(200).json(eatersFromDB);
 		}
 	});
 });
@@ -49,19 +50,20 @@ router.post('/restaurants', (req, res, next) => {
 		if (error) { 
 			next(error); 
 		} else { 
-			res.send({message: "created"});
+			res.status(200).json({message: "created"});
 		}
 	});
 });
 
 // RESTAURANTS - GET
 
+
 router.get('/restaurants', (req, res, next) => {
 	Restaurant.find({},(error, restaurantFromDB) => {
 		if (error) { 
 			next(error); 
 		} else { 
-			res.send(200, restaurantFromDB);
+			res.status(200).json(restaurantFromDB);
 		}
 	});
 });
@@ -74,20 +76,36 @@ router.delete('/eaters',(req, res, next) => {
 		if (error) {
 			next(error);
 		} else {
-			res.send({message: "eaters and restaurants removed"});
+			res.status(200).json({message: "eaters and restaurants removed"});
 		}
 	});
 	Eater.remove({}, function(error, eater) {
 		if (error) {
 			next(error);
 		} else {
-			res.send({message: "eaters and restaurants removed"});
+			res.status(200).json({message: "eaters and restaurants removed"});
 		}
 	});
 });
 
 // CREATE_GROUPS - POST
 
+router.post('/create_groups', (req, res, next) => {
+ console.log(allRestaurants)
+	const newGroup = new Group({
+		leader: allRestaurants[0].name,
+		eaters: [allRestaurants[0].name, allRestaurants[1].name],
+		restaurant: allRestaurants[0].name
+	});
+
+	newGroup.save((error) => {
+		if (error) { 
+			next(error); 
+		} else { 
+			res.send({message: "created"});
+		}
+	});
+});
 
 
 module.exports = router;

@@ -4,6 +4,7 @@ const Eater = require('../models/Eater');
 const Restaurant = require('../models/Restaurant');
 const Group = require('../models/Group');
 
+
 router.get('/', (req, res, next) => {
   res.render('index');
 });
@@ -76,35 +77,40 @@ router.delete('/eaters',(req, res, next) => {
 		if (error) {
 			next(error);
 		} else {
-			res.status(200).json({message: "eaters and restaurants removed"});
-		}
-	});
-	Eater.remove({}, function(error, eater) {
-		if (error) {
-			next(error);
-		} else {
-			res.status(200).json({message: "eaters and restaurants removed"});
+			Eater.remove({}, function(error, eater) {
+				if (error) {
+					next(error);
+				} else {
+					res.status(200).json({message: "eaters and restaurants removed"});
+				}
+			});
 		}
 	});
 });
 
+
+let allRestName = [];
+
+Restaurant.find({},(error, restaurantFromDB) => {
+	if (error) { 
+		next(error); 
+	} else { 
+		
+			restaurantFromDB.map((restaurant, index) => {
+			allRestName.push(restaurant.name)
+
+		})
+	}
+	console.log(allRestName)
+});
+
+
 // CREATE_GROUPS - POST
 
 router.post('/create_groups', (req, res, next) => {
- console.log(allRestaurants)
-	const newGroup = new Group({
-		leader: allRestaurants[0].name,
-		eaters: [allRestaurants[0].name, allRestaurants[1].name],
-		restaurant: allRestaurants[0].name
-	});
+ 
 
-	newGroup.save((error) => {
-		if (error) { 
-			next(error); 
-		} else { 
-			res.send({message: "created"});
-		}
-	});
+	
 });
 
 

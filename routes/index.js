@@ -1,8 +1,8 @@
 const express = require('express');
-const router  = express.Router();
-const Eater = require('../models/Eater');
-const Restaurant = require('../models/Restaurant');
-const Group = require('../models/Group');
+const router = express.Router();
+const Eater = require('../models/eater');
+const Restaurant = require('../models/restaurant');
+const Group = require('../models/group');
 
 
 router.get('/', (req, res, next) => {
@@ -13,107 +13,239 @@ router.get('/', (req, res, next) => {
 
 router.post('/eaters', (req, res, next) => {
 
-	const newEater = new Eater({
-		name: req.body.name,
-		email: req.body.email
-	});
+  const newEater = new Eater({
+    name: req.body.name,
+    email: req.body.email
+  });
 
-	newEater.save((error) => {
-		if (error) { 
-			next(error); 
-		} else { 
-			res.status(200);
-		}
-	});
+  newEater.save((error) => {
+    if (error) {
+      next(error);
+    } else {
+      res.status(200);
+    }
+  });
 });
 
 // EATERS - GET
 router.get('/eaters', (req, res, next) => {
-	Eater.find({},(error, eatersFromDB) => {
-		if (error) { 
-			next(error); 
-		} else { 
-			res.status(200).json(eatersFromDB);
-		}
-	});
+  Eater.find({}, (error, eatersFromDB) => {
+    if (error) {
+      next(error);
+    } else {
+      res.status(200).json(eatersFromDB);
+    }
+  });
 });
 
 // RESTAURANTS - POST
 
 router.post('/restaurants', (req, res, next) => {
 
-	const newRestaurant = new Restaurant({
-		name: req.body.name,
-		address: req.body.address
-	});
+  const newRestaurant = new Restaurant({
+    name: req.body.name,
+    address: req.body.address
+  });
 
-	newRestaurant.save((error) => {
-		if (error) { 
-			next(error); 
-		} else { 
-			res.status(200).json({message: "created"});
-		}
-	});
+  newRestaurant.save((error) => {
+    if (error) {
+      next(error);
+    } else {
+      res.status(200).json({ message: "created" });
+    }
+  });
 });
 
 // RESTAURANTS - GET
 
 
 router.get('/restaurants', (req, res, next) => {
-	Restaurant.find({},(error, restaurantFromDB) => {
-		if (error) { 
-			next(error); 
-		} else { 
-			res.status(200).json(restaurantFromDB);
-		}
-	});
+  Restaurant.find({}, (error, restaurantFromDB) => {
+    if (error) {
+      next(error);
+    } else {
+      res.status(200).json(restaurantFromDB);
+    }
+  });
 });
 
 // EATERS - DELETE (Deleting all eaters and restaurants)
 
-router.delete('/eaters',(req, res, next) => {
-	
-	Restaurant.remove({}, function(error, restaurant) {
-		if (error) {
-			next(error);
-		} else {
-			Eater.remove({}, function(error, eater) {
-				if (error) {
-					next(error);
-				} else {
-					res.status(200).json({message: "eaters and restaurants removed"});
-				}
-			});
-		}
-	});
+router.delete('/eaters', (req, res, next) => {
+
+  Restaurant.remove({}, function (error, restaurant) {
+    if (error) {
+      next(error);
+    } else {
+      Eater.remove({}, function (error, eater) {
+        if (error) {
+          next(error);
+        } else {
+          res.status(200).json({ message: "Eaters and Restaurants removed" });
+        }
+      });
+    }
+  });
 });
 
 
-let allRestName = [];
 
-Restaurant.find({},(error, restaurantFromDB) => {
-	if (error) { 
-		next(error); 
-	} else { 
-		
-			restaurantFromDB.map((restaurant, index) => {
-			allRestName.push(restaurant.name)
+function azar(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
 
-		})
-	}
-	console.log(allRestName)
-});
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
 
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    function algoritmo() {
+      var long = [];
+      Restaurant.find({}, (error, restaurantFromDB) => {
+
+        azar(Eater).find({}, (error, eatersFromDB) => {
+          long.push(restaurantFromDB.length)
+          long.push(eatersFromDB.length)
+          return long[1]
+
+        })
+      });
+
+    }
+ 
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+imrimir_grupos()
+function imrimir_grupos() {
+}
+function lider(array){
+  var solucion=false;
+  //
+}
+function crear_grupos(dividendo, divisor) {
+  var cociente = dividendo / divisor
+  var resto = dividendo % divisor
+}
 
 // CREATE_GROUPS - POST
 
 router.post('/create_groups', (req, res, next) => {
- 
+  var comprobar=false;
+  Group.find({}, (error, groupsFromDB) => {
+    if(groupsFromDB.length>0) {console.log("error ya hay grupos")}
+else{
+  var metidos = 0;
+  var listapersonasaleatoria;
+  var grupo = 'grupo'
+  var minimo = 0;
 
-	
+  var maximo = 7;
+  var restaurantes = 0;
+  var personasporgrupo = minimo - 1;
+  var gentequesobra;
+  var mensaje = false;
+  Restaurant.find({}, (error, restaurantFromDB) => {
+
+    Eater.find({}, (error, eatersFromDB) => {
+
+
+      listapersonasaleatoria = azar(eatersFromDB);
+
+
+      while (minimo > personasporgrupo) {
+        if (personasporgrupo == -1) {
+          restaurantes = restaurantFromDB.length
+          personasporgrupo = Math.floor(eatersFromDB.length / restaurantes)
+          gentequesobra = eatersFromDB.length % restaurantes
+        }
+        else {
+
+          restaurantes--;
+          personasporgrupo = Math.floor(eatersFromDB.length / restaurantes)
+          gentequesobra = eatersFromDB.length % restaurantes
+          if (eatersFromDB.length / restaurantes > maximo) {
+            console.log("NO SE PUEDE ACEPTAR EL MINIMO PARA GENERAR LOS GRUPOS")
+            restaurantes++;
+            personasporgrupo = Math.floor(eatersFromDB.length / restaurantes)
+            gentequesobra = eatersFromDB.length % restaurantes
+            minimo--;
+          }
+        }
+
+      }
+
+
+      console.log("")
+      console.log("numero restaurantes :" + restaurantes)
+      console.log("numero personas :" + eatersFromDB.length)
+      console.log("minimo por grupo :" + personasporgrupo)
+      console.log("gente por grupo:" + personasporgrupo)
+      console.log("resto:" + gentequesobra)
+      console.log("")
+
+      var bar = -1;
+      while (metidos < (listapersonasaleatoria.length - gentequesobra)) {
+
+        var control = 0;
+        var personas=[];
+        var lider;
+        while (control < personasporgrupo) {
+          if (control == 0) {
+            bar++; 
+          }
+          personas.push(listapersonasaleatoria[metidos].name)
+          metidos++;
+          control++;
+        }
+        if (gentequesobra > 0) {
+          
+          personas.push(listapersonasaleatoria[metidos].name)
+          metidos++;
+          gentequesobra--;
+        } 
+
+       console.log( restaurantFromDB[bar].name)//nombre del restaurante para dicho grupo
+console.log( personas )//el array
+
+const newGroup  = new Group({
+  leader: personas,
+	eaters: personas,
+  restaurant: restaurantFromDB[bar].name
+});
+newGroup.save((error) => {
+  if (error) {
+    next(error);
+  } else {
+    res.status(200);
+  }
+});
+
+      }
+    })
+  })
+}
+})
+});
+
+// /groups - GET
+
+router.get('/groups', (req, res, next) => {
+  Group.find({}, (error, groupsFromDB) => {
+    if (error) {
+      next(error);
+    } else {
+      res.status(200).json(groupsFromDB);
+    }
+  });
 });
 
 
 module.exports = router;
-
 

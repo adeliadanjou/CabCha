@@ -3,7 +3,7 @@ const router = express.Router();
 const Eater = require('../models/eater');
 const Restaurant = require('../models/restaurant');
 const Group = require('../models/group');
-
+const { azar } = require('../helpers/helpers');
 
 router.get('/', (req, res, next) => {
   res.render('index');
@@ -58,7 +58,6 @@ router.post('/restaurants', (req, res, next) => {
 
 // RESTAURANTS - GET
 
-
 router.get('/restaurants', (req, res, next) => {
   Restaurant.find({}, (error, restaurantFromDB) => {
     if (error) {
@@ -89,68 +88,26 @@ router.delete('/eaters', (req, res, next) => {
 });
 
 
-
-function azar(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    function algoritmo() {
-      var long = [];
-      Restaurant.find({}, (error, restaurantFromDB) => {
-
-        azar(Eater).find({}, (error, eatersFromDB) => {
-          long.push(restaurantFromDB.length)
-          long.push(eatersFromDB.length)
-          return long[1]
-
-        })
-      });
-
-    }
- 
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
-imrimir_grupos()
-function imrimir_grupos() {
-}
-function lider(array){
-  var solucion=false;
-  //
-}
-function crear_grupos(dividendo, divisor) {
-  var cociente = dividendo / divisor
-  var resto = dividendo % divisor
-}
-
 // CREATE_GROUPS - POST
 
 router.post('/create_groups', (req, res, next) => {
-  var comprobar=false;
+	
   Group.find({}, (error, groupsFromDB) => {
-    if(groupsFromDB.length>0) {console.log("error ya hay grupos")}
+    if(groupsFromDB.length>0) {res.status(403).json({
+			"message": "groups already created"
+		})}
+
 else{
   var metidos = 0;
   var listapersonasaleatoria;
-  var grupo = 'grupo'
+  
   var minimo = 0;
 
   var maximo = 7;
   var restaurantes = 0;
   var personasporgrupo = minimo - 1;
   var gentequesobra;
-  var mensaje = false;
+
   Restaurant.find({}, (error, restaurantFromDB) => {
 
     Eater.find({}, (error, eatersFromDB) => {
@@ -182,20 +139,20 @@ else{
       }
 
 
-      console.log("")
-      console.log("numero restaurantes :" + restaurantes)
-      console.log("numero personas :" + eatersFromDB.length)
-      console.log("minimo por grupo :" + personasporgrupo)
-      console.log("gente por grupo:" + personasporgrupo)
-      console.log("resto:" + gentequesobra)
-      console.log("")
+      // console.log("")
+      // console.log("numero restaurantes :" + restaurantes)
+      // console.log("numero personas :" + eatersFromDB.length)
+      // console.log("minimo por grupo :" + personasporgrupo)
+      // console.log("gente por grupo:" + personasporgrupo)
+      // console.log("resto:" + gentequesobra)
+      // console.log("")
 
       var bar = -1;
       while (metidos < (listapersonasaleatoria.length - gentequesobra)) {
 
         var control = 0;
-        var personas=[];
-        var lider;
+				var personas=[];
+				
         while (control < personasporgrupo) {
           if (control == 0) {
             bar++; 
@@ -211,28 +168,44 @@ else{
           gentequesobra--;
         } 
 
-       console.log( restaurantFromDB[bar].name)//nombre del restaurante para dicho grupo
-console.log( personas )//el array
+//        console.log( restaurantFromDB[bar].name)//nombre del restaurante para dicho grupo
+// console.log( personas )//el array
 
 const newGroup  = new Group({
   leader: personas,
 	eaters: personas,
   restaurant: restaurantFromDB[bar].name
 });
-newGroup.save((error) => {
+
+newGroup.save((error,user) => {
   if (error) {
     next(error);
   } else {
-    res.status(200);
+    return 	Group.find({}, (error, groupsFromDB) => {
+			if (error) {
+				next(error);
+			} else {
+				res.status(200).json(groupsFromDB);
+			}
+		});;
   }
-});
+})
 
       }
     })
-  })
+	})
+	
 }
+
+
 })
+
 });
+
+
+
+
+
 
 // /groups - GET
 

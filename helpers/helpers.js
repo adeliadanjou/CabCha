@@ -1,4 +1,8 @@
-function azar(array) {
+
+const Group = require('../models/group');
+const OldLeader = require('../models/oldLeader');
+
+function random(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
 
   while (0 !== currentIndex) {
@@ -17,7 +21,6 @@ function azar(array) {
 
         })
       });
-
     }
  
     temporaryValue = array[currentIndex];
@@ -28,12 +31,34 @@ function azar(array) {
   return array;
 }
 
+function oldLeaders(){
+	Group.find({}, (error, groupsFromDB) => {
+		if (error) {
+			next(error);
+		} else {
+        if(groupsFromDB.length > 0){
+
+      var myOldLeaders = groupsFromDB.map(group => {
+        return group.leader;
+      });
+     
+      const newOldLeader = new OldLeader({
+        leaders: myOldLeaders,
+      });
+    
+      newOldLeader.save((error) => {
+        if (error) {
+          next(error);
+        } else {
+         console.log("lideres guardados")
+        }
+      });
+    } 
+   
+		}
+	});
+}
 
 
 
-
-
-
-
-
-module.exports = { azar };
+module.exports = { random, oldLeaders };

@@ -22,7 +22,7 @@ router.post('/eaters', (req, res, next) => {
 		if (error) {
 			next(error);
 		} else {
-			res.status(200);
+			res.status(200).end();
 		}
 	});
 });
@@ -79,7 +79,7 @@ router.get('/restaurants', (req, res, next) => {
 // guarantee they will not be repeated the next week.
 
 router.delete('/eaters', (req, res, next) => {
-
+oldLeaders()
 	Restaurant.remove({}, function (error, restaurant) {
 		if (error) {
 			next(error);
@@ -88,6 +88,7 @@ router.delete('/eaters', (req, res, next) => {
 				if (error) {
 					next(error);
 				} else {
+					
 					Group.remove({}, function (error, group) {
 						if (error) {
 							next(error);
@@ -130,7 +131,7 @@ router.post('/create_groups', (req, res, next) => {
 					randomEatersList = random(eatersFromDB);
 
 					while (minGroup > eatersPerGroup) {
-						if (eatersPerGroup == -1) {
+						if (eatersPerGroup === -1) {
 							restaurants = restaurantFromDB.length
 							eatersPerGroup = Math.floor(eatersFromDB.length / restaurants)
 							restOfEaters = eatersFromDB.length % restaurants
@@ -156,7 +157,7 @@ router.post('/create_groups', (req, res, next) => {
 						var personas = [];
 
 						while (control < eatersPerGroup) {
-							if (control == 0) {
+							if (control === 0) {
 								bar++;
 							}
 							personas.push(randomEatersList[metidos].name)
@@ -195,8 +196,9 @@ router.post('/create_groups', (req, res, next) => {
 			})
 		}
 	})
-	oldLeaders()
+	
 });
+
 
 // /groups - GET
 

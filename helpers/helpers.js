@@ -32,6 +32,8 @@ function random(array) {
 }
 
 function oldLeaders(){
+
+  
 	Group.find({}, (error, groupsFromDB) => {
 		if (error) {
 			next(error);
@@ -50,7 +52,7 @@ function oldLeaders(){
         if (error) {
           next(error);
         } else {
-         console.log("lideres guardados")
+         return "lideres guardados"
         }
       });
     } 

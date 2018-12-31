@@ -31,9 +31,9 @@ function random(array) {
   return array;
 }
 
+
 function oldLeaders(){
 
-  
 	Group.find({}, (error, groupsFromDB) => {
 		if (error) {
 			next(error);
@@ -60,7 +60,6 @@ function oldLeaders(){
 		}
 	});
 }
-
 
 
 module.exports = { random, oldLeaders };

@@ -3,8 +3,11 @@ const router = express.Router();
 const Eater = require('../models/eater');
 const Restaurant = require('../models/restaurant');
 const Group = require('../models/group');
-const {random, oldLeaders} = require('../helpers/helpers');
-
+const {
+	random,
+	oldLeaders
+} = require('../helpers/helpers');
+const OldLeader = require('../models/oldLeader');
 router.get('/', (req, res, next) => {
 	res.render('index');
 });
@@ -79,7 +82,7 @@ router.get('/restaurants', (req, res, next) => {
 // guarantee they will not be repeated the next week.
 
 router.delete('/eaters', (req, res, next) => {
-oldLeaders()
+	oldLeaders()
 	Restaurant.remove({}, function (error, restaurant) {
 		if (error) {
 			next(error);
@@ -88,13 +91,13 @@ oldLeaders()
 				if (error) {
 					next(error);
 				} else {
-					
+
 					Group.remove({}, function (error, group) {
 						if (error) {
 							next(error);
 						} else {
 							res.status(200).json({
-								message: "eaters and restaurants removed" 
+								message: "eaters and restaurants removed"
 							});
 						}
 					});
@@ -104,12 +107,32 @@ oldLeaders()
 	});
 });
 
+//new feature: I made both a specific delete groups route and when I 
+//delete restaurants and eaters I also delete groups because I don't need them 
+// anymore. I created both just for convenience.
+
+router.delete('/create_groups', (req, res, next) => {
+	oldLeaders()
+	Group.remove({}, function (error, group) {
+		if (error) {
+			next(error);
+		}
+	});
+	res.status(200).send({
+		message: "groups removed"
+	});
+});
 
 // CREATE_GROUPS - POST
+// New feature: Down here I decided to add a var called minGroup
+// to set not just the groups maximun but the minimun of persons per group.
+//so if you want to make groups with a minimun of 4 persons, just change 0 to 4.
+// and the magic is created ^^
 
 router.post('/create_groups', (req, res, next) => {
 
 	Group.find({}, (error, groupsFromDB) => {
+		var groups = [];
 		if (groupsFromDB.length > 0) {
 			res.status(412).json({
 				"message": "groups already created"
@@ -149,56 +172,78 @@ router.post('/create_groups', (req, res, next) => {
 							}
 						}
 					}
-
 					var bar = -1;
-					while (metidos < (randomEatersList.length - restOfEaters)) {
 
-						var control = 0;
-						var personas = [];
-
-						while (control < eatersPerGroup) {
-							if (control === 0) {
-								bar++;
-							}
-							personas.push(randomEatersList[metidos].name)
-							metidos++;
-							control++;
-						}
-						if (restOfEaters > 0) {
-
-							personas.push(randomEatersList[metidos].name)
-							metidos++;
-							restOfEaters--;
-						}
-
-
-						const newGroup = new Group({
-							leader: personas[0],
-							eaters: personas,
-							restaurant: restaurantFromDB[bar].name
-						});
-
-						newGroup.save((error) => {
-							if (error) {
-								next(error);
-							} else {
-								return Group.find({}, (error, groupsFromDB) => {
-									if (error) {
-										next(error);
+					OldLeader.find({}, (error, oldFromDB) => {
+						while (metidos < (randomEatersList.length - restOfEaters)) {
+							var lider = false;
+							var meter;
+							var control = 0;
+							var personas = [];
+							while (control < eatersPerGroup) {
+								if (control === 0) {
+									bar++;
+								}
+								if (lider == false) {
+									if (oldFromDB.length > 0) {
+										if (noLider(randomEatersList[metidos].name, oldFromDB[oldFromDB.length - 1].leaders)) {
+											meter = randomEatersList[metidos].name;
+										}
 									} else {
-										res.status(200).json(groupsFromDB);
+										meter = randomEatersList[metidos].name;
 									}
-								});;
+								}
+								personas.push(randomEatersList[metidos].name)
+								metidos++;
+								control++;
 							}
-						})
-					}
+							if (restOfEaters > 0) {
+
+								personas.push(randomEatersList[metidos].name)
+								metidos++;
+								restOfEaters--;
+							}
+
+
+							const newGroup = new Group({
+								leader: meter,
+								eaters: personas,
+								restaurant: restaurantFromDB[bar].name
+							});
+
+							groups.push(newGroup)
+
+
+							newGroup.save((error) => {
+
+								if (error) {
+									next(error);
+								}
+							})
+						}
+						res.status(200).json(groups)
+					})
 				})
 			})
+
 		}
-	})
-	
+	});
+
 });
 
+function noLider(nombre, groupsFromDB) {
+	var solucion = true;
+	//extra:poner error caso extremo 
+	for (var b = 0; b < groupsFromDB.length; b++) {
+
+		if (groupsFromDB[b] == nombre) {
+			solucion = false;
+		}
+
+	}
+	return solucion;
+
+}
 
 // /groups - GET
 
@@ -216,3 +261,8 @@ router.get('/groups', (req, res, next) => {
 
 
 module.exports = router;
+
+//Nuevas features sugeridas:
+
+//1)gestionar cuando no hay grupos que no se pueda hacer un create groups y salga
+//mensaje diciendo que no hay eaters y restaurants

@@ -63,6 +63,26 @@ describe("Testing the show list restaurants", function() {
   });
 });
 
+describe("Testing the delete route", function() {
+  describe("DELETE /eaters", function() {
+
+    it("returns status code 200", function(done) {
+      request.delete(eaters, function(error, response, body) {
+        expect(response.statusCode).toBe(200);
+        done();
+      });
+    });
+
+    it("returns eaters.length === 0", function(done) {
+      request.delete(eaters, function(error, response, body) {
+        expect(body).toBe(0);
+        done();
+      });
+    }); 
+
+  });
+});
+
 //Testing my eaters-post route:
 
 // describe("Testing the creating restaurants", function() {
